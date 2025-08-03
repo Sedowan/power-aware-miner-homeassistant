@@ -158,26 +158,31 @@ By comparing both values, the system can decide when to start or stop mining GPU
       unique_id: bf167e5d-3257-46fe-9363-c5214fab5989
       icon: mdi:expansion-card
       state: >
-        {% set grid_p = states('sensor.[YOUR_GRID_SENSOR]]') | float(0) %}
+        {% set gpus = int(0) %}
         {% set possible_g = states('sensor.possible_gpus') | int(0) %}
+        {% set grid_p = states('sensor.[YOUR_GRID_SENSOR]]') | float(0) %}
         {% set active_g = states('sensor.active_gpus') | int(-10) %}
         {% set prio_p = states('sensor.[YOUR_PRIORITY_CONSUMER]]') | float(0) %}
         {% set prio_on = states('switch.[YOUR_PRIOTITY_CONSUMER_SWITCH_STATE]]')  | bool(true) %}
         {% set pv_p = states('sensor.[YOUR_SOLAR_POWER]]') | float(0) %}
         {% set soc_v = states('sensor.[YOUR_STATE_OF_CHARGE]]') | float(0) %}
-        {% set gpus = int(0) %}
         {% set max_gpus = int([YOUR_GPU_NUMBER]) %}
+        {% set est_p_gpu = [YOUR_ESTIMATED_POWER_DRAW_PERGPU] %}
+        {% set est_p_prio = [YOUR_ESTIMATED_POWER_DRAW_PRIO] %}
+        {% set lower_soc = [YOUR_LOWER_SOC_LIMIT] %}
+        {% set surp_th_g = [YOUR_SURPLUS_THRESHOLD_FOR_GRID] %}
+        {% set surp_th_p = [YOUR_SURPLUS_THRESHOLD_FOR_PRIORITY] %}
         {% if active_g >= 0 %}
-          {% set grid_p_wo_gpu = float(grid_p + (float(active_g) * 300)) %}
+          {% set grid_p_wo_gpu = float(grid_p + (float(active_g) * est_p_gpu)) %}
         {% endif %}
         {% if grid_p > 0 %}
           {% if pv_p > 0 %}
-            {% if prio_on == false and grid_p_wo_gpu > 350 and grid_p_wo_gpu < 1850 and soc_v > 95 %}
-              {% set gpus = int(grid_p_wo_gpu / 300 ) | round(0) %}
-            {% elif prio_on == true and grid_p_wo_gpu > 350 and soc_v > 95 %}
-              {% set gpus = int((grid_p_wo_gpu) / 300 ) | round(0) %}
-            {% elif prio_on == false and grid_p_wo_gpu > 2400 and soc_v > 95 %}
-              {% set gpus = int((grid_p_wo_gpu - prio_p - 150) / 300 ) | round(0) %}
+            {% if prio_on == false and grid_p_wo_gpu > surp_th_g and grid_p_wo_gpu < 1850 and soc_v > lower_soc %}
+              {% set gpus = int(grid_p_wo_gpu / est_p_gpu ) | round(0) %}
+            {% elif prio_on == true and grid_p_wo_gpu > surp_th_g and soc_v > lower_soc %}
+              {% set gpus = int((grid_p_wo_gpu) / est_p_gpu ) | round(0) %}
+            {% elif prio_on == false and grid_p_wo_gpu > est_p_prio and soc_v > lower_soc %}
+              {% set gpus = int((grid_p_wo_gpu - prio_p - surp_th_p) / est_p_gpu ) | round(0) %}
             {% else %}
               {% set gpus = 0 %}
             {% endif %}
@@ -198,7 +203,7 @@ By comparing both values, the system can decide when to start or stop mining GPU
 ```yaml
 - sensor:
     - name: "active_gpus"
-      unique_id: cfadd956-b245-4e1c-a0af-7a890e83dcdd
+      unique_id: cfadd[YOUR_LOWER_SOC_LIMIT]6-b245-4e1c-a0af-7a890e83dcdd
       icon: mdi:expansion-card-variant
       state: >
         {% set gpu0 = int(1) %}
