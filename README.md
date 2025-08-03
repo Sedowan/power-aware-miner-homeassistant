@@ -1,4 +1,4 @@
-# Smart Solar-Aware Mining Rig with Home Assistant and Windows
+# Smart Power-Aware Mining Rig with Home Assistant and Windows
 
 This project describes a fully automated mining rig that operates GPUs based on surplus solar power. The setup combines:
 
