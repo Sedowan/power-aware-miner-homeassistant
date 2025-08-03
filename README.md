@@ -120,7 +120,7 @@ This shows the sensor configuration in HASS.Agent. It tracks if a Command Prompt
 
 
 
-## Final HASS.Agent Setup:
+### Final HASS.Agent Setup:
 
 ![HASS.AGENT_Sensors](images/sensors_de.jpg)
 
