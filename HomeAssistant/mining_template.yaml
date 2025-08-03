@@ -5,12 +5,12 @@
       state: >
         {% set gpus = int(0) %}
         {% set possible_g = states('sensor.possible_gpus') | int(0) %}
-        {% set grid_p = states('sensor.[YOUR_GRID_SENSOR]]') | float(0) %}
+        {% set grid_p = states('sensor.[YOUR_GRID_SENSOR]') | float(0) %}
         {% set active_g = states('sensor.active_gpus') | int(-10) %}
-        {% set prio_p = states('sensor.[YOUR_PRIORITY_CONSUMER]]') | float(0) %}
-        {% set prio_on = states('switch.[YOUR_PRIOTITY_CONSUMER_SWITCH_STATE]]')  | bool(true) %}
-        {% set pv_p = states('sensor.[YOUR_SOLAR_POWER]]') | float(0) %}
-        {% set soc_v = states('sensor.[YOUR_STATE_OF_CHARGE]]') | float(0) %}
+        {% set prio_p = states('sensor.[YOUR_PRIORITY_CONSUMER]') | float(0) %}
+        {% set prio_on = states('switch.[YOUR_PRIOTITY_CONSUMER_SWITCH_STATE]')  | bool(true) %}
+        {% set pv_p = states('sensor.[YOUR_SOLAR_POWER]') | float(0) %}
+        {% set soc_v = states('sensor.[YOUR_STATE_OF_CHARGE]') | float(0) %}
         {% set max_gpus = int([YOUR_GPU_NUMBER]) %}
         {% set est_p_gpu = [YOUR_ESTIMATED_POWER_DRAW_PERGPU] %}
         {% set est_p_prio = [YOUR_ESTIMATED_POWER_DRAW_PRIO] %}
