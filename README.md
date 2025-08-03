@@ -119,7 +119,7 @@ This shows the sensor configuration in HASS.Agent. It tracks if a Command Prompt
 
 ![HA_MQTT_Commands_and_Sensors](images/HA_MQTT_Entities.jpg)
 
-This shows the sensor configuration in HASS.Agent. It tracks if a Command Prompt window with the title `GMiner_GPU0` is open (not necessarily in focus).
+This shows the command and sensor configuration in Home Assistant aftter the setup.
 
 ---
 
@@ -438,9 +438,6 @@ actions:
                             data: {}
                             target:
                               entity_id: button.mining_rig_1_mining_rig_1_stopgpu0
-```
-
-> ⚠️ The full action block includes one-by-one conditional logic for each GPU, using `button.press` and 15-second delays between steps.
 
 ---
 
