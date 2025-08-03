@@ -137,7 +137,7 @@ Two Home Assistant template sensors determine system capability:
       state: >
         {% set grid_p = states('sensor.mb_varta_grid_power') | float(0) %}
         {% set possible_g = states('sensor.possible_gpus') | int(0) %}
-        {% set active_g = states('sensor.acttive_gpus') | int(-10) %}
+        {% set active_g = states('sensor.active_gpus') | int(-10) %}
         {% set heiz_p = states('sensor.smartsteckdose_keller_2_heizstab_power') | float(0) %}
         {% set heizstab_an = states('switch.smartsteckdose_keller_2_heizstab')  | bool(true) %}
         {% set pv_p = states('sensor.solarmax_1_current_power') | float(0) %}
@@ -170,11 +170,11 @@ Two Home Assistant template sensors determine system capability:
         {{ gpus }}
 ```
 
-### Sensor: `acttive_gpus`
+### Sensor: `active_gpus`
 
 ```yaml
 - sensor:
-    - name: "acttive_gpus"
+    - name: "active_gpus"
       unique_id: cfadd956-b245-4e1c-a0af-7a890e83dcdd
       icon: mdi:expansion-card-variant
       state: >
