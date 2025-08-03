@@ -144,6 +144,12 @@ This shows the commands and sensors configuration in Home Assistant after the se
 
 Two Home Assistant template sensors determine system capability:
 
+The first sensor (`possible_gpus`) calculates how many GPUs can be powered based on grid power, solar power, battery SOC, and the status of a priority consumer. If conditions are favorable, it estimates how many GPUs could be run without drawing energy from the grid.
+
+The second sensor (`active_gpus`) simply counts how many GPUs are currently active, using HASS.Agent window sensors that detect running miner windows.
+
+By comparing both values, the system can decide when to start or stop mining GPUs.
+
 ### Sensor: `possible_gpus`
 
 ```yaml
