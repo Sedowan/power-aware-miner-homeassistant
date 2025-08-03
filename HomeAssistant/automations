@@ -4,7 +4,7 @@ triggers:
   - trigger: state
     entity_id:
       - sensor.possible_gpus
-    id: Miningmöglichkeiten geändert
+    id: Mining possibility changed
     for:
       hours: 0
       minutes: 1
@@ -16,14 +16,14 @@ triggers:
       hours: 0
       minutes: 1
       seconds: 0
-    id: Miningaktivität geändert
+    id: Mining activity changed
 conditions: []
 actions:
       - conditions:
           - condition: trigger
             id:
-              - Miningmöglichkeiten geändert
-              - Miningaktivität geändert
+              - Mining possibility changed
+              - Mining activity changed
         sequence:
           - choose:
               - conditions:
@@ -222,3 +222,4 @@ actions:
                             data: {}
                             target:
                               entity_id: button.mining_rig_1_mining_rig_1_stopgpu0
+mode: single
