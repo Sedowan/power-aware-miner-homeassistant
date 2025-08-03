@@ -113,7 +113,11 @@ These sensors are auto-discovered in Home Assistant as `binary_sensor.mining_rig
 
 #### Graphical Setup Example:
 
+![HASS.Agent_Sensors](images/sensors.jpg)
 
+This shows the sensor configuration in HASS.Agent. It tracks if a Command Prompt window with the title `GMiner_GPU0` is open (not necessarily in focus).
+
+![HA_MQTT_Commands_and_Sensors](images/HA_MQTT_Entities.jpg)
 
 This shows the sensor configuration in HASS.Agent. It tracks if a Command Prompt window with the title `GMiner_GPU0` is open (not necessarily in focus).
 
