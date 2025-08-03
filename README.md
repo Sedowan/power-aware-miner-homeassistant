@@ -245,8 +245,9 @@ This automation starts or stops mining GPUs depending on the comparison of `moeg
 
 ```yaml
 alias: Miningmanagement
-[... see automations.yaml ...]
 ```
+[... see automations.yaml ...]
+![automations.yaml](HomeAssistant/automations.yaml)
 
 > ⚠️ The full action block includes one-by-one conditional logic for each GPU, using `button.press` and 15-second delays between steps.
 
