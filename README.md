@@ -136,7 +136,7 @@ This shows the sensors configuration in HASS.Agent after the setup.
 
 ![HA_MQTT_Commands_and_Sensors](images/HA_MQTT_Entities_de.jpg)
 
-This shows the command and sensor configuration in Home Assistant after the setup.
+This shows the commands and sensors configuration in Home Assistant after the setup.
 
 ---
 
