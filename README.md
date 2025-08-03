@@ -132,7 +132,7 @@ This shows the sensors configuration in HASS.Agent after the setup.
 
 ![HASS.AGENT_Commands](images/commands_en.jpg)
 
-This shows the sensors configuration in HASS.Agent after the setup.
+This shows the commands configuration in HASS.Agent after the setup.
 
 
 
