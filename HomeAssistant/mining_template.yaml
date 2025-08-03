@@ -1,0 +1,71 @@
+- sensor:
+    - name: "possible_gpus"
+      unique_id: bf167e5d-3257-46fe-9363-c5214fab5989
+      icon: mdi:expansion-card
+      state: >
+        {% set grid_p = states('sensor.[YOUR_GRID_SENSOR]]') | float(0) %}
+        {% set possible_g = states('sensor.possible_gpus') | int(0) %}
+        {% set active_g = states('sensor.active_gpus') | int(-10) %}
+        {% set prio_p = states('sensor.[YOUR_PRIORITY_CONSUMER]]') | float(0) %}
+        {% set prio_on = states('switch.[YOUR_PRIOTITY_CONSUMER_SWITCH_STATE]]')  | bool(true) %}
+        {% set pv_p = states('sensor.[YOUR_SOLAR_POWER]]') | float(0) %}
+        {% set soc_v = states('sensor.[YOUR_STATE_OF_CHARGE]]') | float(0) %}
+        {% set gpus = int(0) %}
+        {% set max_gpus = int([YOUR_GPU_NUMBER]) %}
+        {% if active_g >= 0 %}
+          {% set grid_p_wo_gpu = float(grid_p + (float(active_g) * 300)) %}
+        {% endif %}
+        {% if grid_p > 0 %}
+          {% if pv_p > 0 %}
+            {% if prio_on == false and grid_p_wo_gpu > 350 and grid_p_wo_gpu < 1850 and soc_v > 95 %}
+              {% set gpus = int(grid_p_wo_gpu / 300 ) | round(0) %}
+            {% elif prio_on == true and grid_p_wo_gpu > 350 and soc_v > 95 %}
+              {% set gpus = int((grid_p_wo_gpu) / 300 ) | round(0) %}
+            {% elif prio_on == false and grid_p_wo_gpu > 2400 and soc_v > 95 %}
+              {% set gpus = int((grid_p_wo_gpu - prio_p - 150) / 300 ) | round(0) %}
+            {% else %}
+              {% set gpus = 0 %}
+            {% endif %}
+          {% else %}
+            {% set gpus = 0 %}
+          {% endif %}
+        {% else %}
+            {% set gpus = 0 %}
+        {% endif %}
+        {% if gpus > max_gpus %}
+          {% set gpus = max_gpus %}
+        {% endif%}
+        {{ gpus }}
+
+- sensor:
+    - name: "active_gpus"
+      unique_id: cfadd956-b245-4e1c-a0af-7a890e83dcdd
+      icon: mdi:expansion-card-variant
+      state: >
+        {% set gpu0 = int(1) %}
+        {% set gpu1 = int(1) %}
+        {% set gpu2 = int(1) %}
+        {% set gpu3 = int(1) %}
+        {% set gpu4 = int(1) %}
+        {% set gpu5 = int(1) %}
+        {% set gpus = int(6) %}
+        {% if states('binary_sensor.mining_rig_1_gminer_gpu0_active') == "off" %}
+          {% set gpu0 = int(0) %}
+        {% endif %}
+        {% if states('binary_sensor.mining_rig_1_gminer_gpu1_active') == "off" %}
+          {% set gpu1 = int(0) %}
+        {% endif %}
+        {% if states('binary_sensor.mining_rig_1_gminer_gpu2_active') == "off" %}
+          {% set gpu2 = int(0) %}
+        {% endif %}
+        {% if states('binary_sensor.mining_rig_1_gminer_gpu3_active') == "off" %}
+          {% set gpu3 = int(0) %}
+        {% endif %}
+        {% if states('binary_sensor.mining_rig_1_gminer_gpu4_active') == "off" %}
+          {% set gpu4 = int(0) %}
+        {% endif %}
+        {% if states('binary_sensor.mining_rig_1_gminer_gpu5_active') == "off" %}
+          {% set gpu5 = int(0) %}
+        {% endif %}
+        {% set gpus = int(gpu0 + gpu1 + gpu2 + gpu3 + gpu4 + gpu5) %}
+        {{ gpus }}

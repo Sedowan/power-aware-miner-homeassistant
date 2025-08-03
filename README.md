@@ -135,26 +135,26 @@ Two Home Assistant template sensors determine system capability:
       unique_id: bf167e5d-3257-46fe-9363-c5214fab5989
       icon: mdi:expansion-card
       state: >
-        {% set grid_p = states('sensor.mb_varta_grid_power') | float(0) %}
+        {% set grid_p = states('sensor.[YOUR_GRID_SENSOR]]') | float(0) %}
         {% set possible_g = states('sensor.possible_gpus') | int(0) %}
         {% set active_g = states('sensor.active_gpus') | int(-10) %}
-        {% set heiz_p = states('sensor.smartsteckdose_keller_2_heizstab_power') | float(0) %}
-        {% set heizstab_an = states('switch.smartsteckdose_keller_2_heizstab')  | bool(true) %}
-        {% set pv_p = states('sensor.solarmax_1_current_power') | float(0) %}
-        {% set soc_v = states('sensor.varta_soc') | float(0) %}
+        {% set prio_p = states('sensor.[YOUR_PRIORITY_CONSUMER]]') | float(0) %}
+        {% set prio_on = states('switch.[YOUR_PRIOTITY_CONSUMER_SWITCH_STATE]]')  | bool(true) %}
+        {% set pv_p = states('sensor.[YOUR_SOLAR_POWER]]') | float(0) %}
+        {% set soc_v = states('sensor.[YOUR_STATE_OF_CHARGE]]') | float(0) %}
         {% set gpus = int(0) %}
-        {% set max_gpus = int(2) %}
+        {% set max_gpus = int([YOUR_GPU_NUMBER]) %}
         {% if active_g >= 0 %}
           {% set grid_p_wo_gpu = float(grid_p + (float(active_g) * 300)) %}
         {% endif %}
         {% if grid_p > 0 %}
           {% if pv_p > 0 %}
-            {% if heizstab_an == false and grid_p_wo_gpu > 350 and grid_p_wo_gpu < 1850 and soc_v > 95 %}
+            {% if prio_on == false and grid_p_wo_gpu > 350 and grid_p_wo_gpu < 1850 and soc_v > 95 %}
               {% set gpus = int(grid_p_wo_gpu / 300 ) | round(0) %}
-            {% elif heizstab_an == true and grid_p_wo_gpu > 350 and soc_v > 95 %}
+            {% elif prio_on == true and grid_p_wo_gpu > 350 and soc_v > 95 %}
               {% set gpus = int((grid_p_wo_gpu) / 300 ) | round(0) %}
-            {% elif heizstab_an == false and grid_p_wo_gpu > 2400 and soc_v > 95 %}
-              {% set gpus = int((grid_p_wo_gpu - heiz_p - 150) / 300 ) | round(0) %}
+            {% elif prio_on == false and grid_p_wo_gpu > 2400 and soc_v > 95 %}
+              {% set gpus = int((grid_p_wo_gpu - prio_p - 150) / 300 ) | round(0) %}
             {% else %}
               {% set gpus = 0 %}
             {% endif %}
