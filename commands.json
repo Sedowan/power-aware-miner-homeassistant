@@ -1,0 +1,145 @@
+[
+  {
+    "Id": "0fc8c231-9c9c-4512-ae43-f8f63584a5b5",
+    "Name": "Mining-Rig-1-Restart",
+    "EntityName": "Mining-Rig-1-Restart",
+    "Type": "RestartCommand",
+    "EntityType": "button",
+    "Command": "shutdown /r",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": false,
+    "Keys": []
+  },
+  {
+    "Id": "5fe69606-95b6-4a13-9dc4-534982892d33",
+    "Name": "Mining-Rig-1-Start-GPU0",
+    "EntityName": "Mining-Rig-1-Start-GPU0",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "C:\\Mining\\GMiner\\mine_ravencoin_0.bat",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "83f33849-e458-4fcb-a959-9df9df1af292",
+    "Name": "Mining-Rig-1-Start-GPU1",
+    "EntityName": "Mining-Rig-1-Start-GPU1",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "C:\\Mining\\GMiner\\mine_ravencoin_1.bat",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "aeca237b-fd3b-4aec-aac2-7ac6c0393a62",
+    "Name": "Mining-Rig-1-Start-GPU2",
+    "EntityName": "Mining-Rig-1-Start-GPU2",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "C:\\Mining\\GMiner\\mine_ravencoin_2.bat",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "ce7163ce-d570-432e-80fb-797741abadd5",
+    "Name": "Mining-Rig-1-Start-GPU3",
+    "EntityName": "Mining-Rig-1-Start-GPU3",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "C:\\Mining\\GMiner\\mine_ravencoin_3.bat",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "f6a65734-cce7-4896-a928-09c75cb9511d",
+    "Name": "Mining-Rig-1-Start-GPU4",
+    "EntityName": "Mining-Rig-1-Start-GPU4",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "C:\\Mining\\GMiner\\mine_ravencoin_4.bat",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "602c65cc-bbb1-415c-98e7-f9a242c468b4",
+    "Name": "Mining-Rig-1-Start-GPU5",
+    "EntityName": "Mining-Rig-1-Start-GPU5",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "C:\\Mining\\GMiner\\mine_ravencoin_5.bat",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "b1ea3aa9-8751-4157-a239-8e726d178d91",
+    "Name": "Mining-Rig-1-StopGPU0",
+    "EntityName": "Mining-Rig-1-StopGPU0",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU0\" /t",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "c3531c69-37ec-4e47-8c87-3b13c2a98d5f",
+    "Name": "Mining-Rig-1-StopGPU1",
+    "EntityName": "Mining-Rig-1-StopGPU1",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU1\" /t",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "f3c1e6bb-c6b5-41a8-be7c-34185762184a",
+    "Name": "Mining-Rig-1-StopGPU2",
+    "EntityName": "Mining-Rig-1-StopGPU2",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU2\" /t",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "9de6c7fb-6894-4a14-9a33-f33d6b465b63",
+    "Name": "Mining-Rig-1-StopGPU3",
+    "EntityName": "Mining-Rig-1-StopGPU3",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU3\" /t",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "d2bbfafa-955d-4fac-ad99-72c7ca427e25",
+    "Name": "Mining-Rig-1-StopGPU4",
+    "EntityName": "Mining-Rig-1-StopGPU4",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU4\" /t",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  },
+  {
+    "Id": "d0383a5f-adb0-41fe-8ecb-5a94958496bc",
+    "Name": "Mining-Rig-1-StopGPU5",
+    "EntityName": "Mining-Rig-1-StopGPU5",
+    "Type": "CustomCommand",
+    "EntityType": "button",
+    "Command": "taskkill /f /fi \"WindowTitle eq GMiner_GPU5\" /t",
+    "KeyCode": 0,
+    "RunAsLowIntegrity": true,
+    "Keys": []
+  }
+]
