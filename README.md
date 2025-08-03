@@ -79,14 +79,14 @@ The same pattern is used for GPU1 through GPU5, with only the device number and 
 
 **Start GPU0 Command Setup**
 
-![Logo](images/gpu_start_bat.jpg)
+![GPU_Start_Command](images/gpu_start_bat.jpg)
 
 
 This shows how HASS.Agent is configured to start GPU0 by executing the batch file `mine_ravencoin_0.bat`. The "Run with low integrity" option is checked to allow execution without elevated privileges.
 
 **Stop GPU0 Command Setup**
 
-![Logo](images/killtask.jpg)
+![GPU_Stop_Command](images/killtask.jpg)
 
 This shows the HASS.Agent stop command for GPU0, which uses a `taskkill` command targeting the window title of the GPU miner process.
 
@@ -109,7 +109,7 @@ Each GPU has a `NamedWindowSensor` to detect whether the corresponding miner pro
 }
 ```
 
-These sensors are auto-discovered in Home Assistant as `binary_sensor.mining_rig_1_gminer_gpuX_active`.
+These sensors are auto-discovered in Home Assistant as `binary_sensor.mining_rig_1_gminer_gpux_active`.
 
 #### Graphical Setup Example:
 
