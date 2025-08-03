@@ -8,6 +8,8 @@ This project describes a fully automated mining rig that operates GPUs based on 
 
 > The system ensures that mining only occurs when conditions allow, such as sufficient battery charge, available photovoltaic (PV) power, and low competing load priority.
 
+> The Example is based on 6 available GPUs. However, the logic is repetitive.
+
 ---
 
 ## Step 1: Mining Rig Setup (Windows 11)
