@@ -235,3 +235,8 @@ This project allows:
 
 Feel free to fork and customize the logic, or open issues for improvements or questions.
 
+## Sources
+
+- Home Assistant
+- HASS.Agent
+- ChatGPT
