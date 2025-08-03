@@ -264,6 +264,8 @@ This project allows:
 - Granular GPU control and feedback
 - Fully modular and reproducible setup
 
+This project is "as is" and will not be maintained.
+
 ---
 
 Feel free to fork and customize the logic, or open issues for improvements or questions.
