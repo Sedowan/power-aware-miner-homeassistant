@@ -214,8 +214,8 @@ Two Home Assistant template sensors determine system capability:
 This automation starts or stops mining GPUs depending on the comparison of `moegliche_gpus` and `aktive_gpus`.
 
 ```yaml
-alias: Energiemanagement
-[... vollständiger YAML-Inhalt hier wie von dir geliefert ...]
+alias: Miningmanagement
+[... see automations.yaml ...]
 ```
 
 > ⚠️ The full action block includes one-by-one conditional logic for each GPU, using `button.press` and 15-second delays between steps.

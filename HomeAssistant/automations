@@ -1,4 +1,4 @@
-alias: Energiemanagement
+alias: Miningmanagement
 description: ""
 triggers:
   - trigger: state
