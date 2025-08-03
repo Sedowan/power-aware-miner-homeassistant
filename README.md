@@ -150,7 +150,7 @@ The second sensor (`active_gpus`) simply counts how many GPUs are currently acti
 
 By comparing both values, the system can decide when to start or stop mining GPUs.
 
-Repalse ('[YOUR_...]') with the appropriate value of your system.
+Repalse ('\[YOUR_...\]') with the appropriate value of your system.
 
 ### Sensor: `possible_gpus`
 
