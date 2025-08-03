@@ -19,207 +19,201 @@ triggers:
     id: Mining activity changed
 conditions: []
 actions:
+  - choose:
       - conditions:
-          - condition: trigger
-            id:
-              - Mining possibility changed
-              - Mining activity changed
+          - condition: numeric_state
+            entity_id: sensor.possible_gpus
+            above: sensor.active_gpus
         sequence:
           - choose:
               - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu0_active
+                    state: "off"
                   - condition: numeric_state
-                    entity_id: sensor.possible_gpus
-                    above: sensor.active_gpus
+                    entity_id: sensor.active_gpus
+                    below: sensor.possible_gpus
                 sequence:
-                  - choose:
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu0_active
-                            state: "off"
-                          - condition: numeric_state
-                            entity_id: sensor.active_gpus
-                            below: sensor.possible_gpus
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_start_gpu0
-                          - delay:
-                              hours: 0
-                              minutes: 0
-                              seconds: 15
-                              milliseconds: 0
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu1_active
-                            state: "off"
-                          - condition: numeric_state
-                            entity_id: sensor.active_gpus
-                            below: sensor.possible_gpus
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_start_gpu1
-                          - delay:
-                              hours: 0
-                              minutes: 0
-                              seconds: 15
-                              milliseconds: 0
-                      - conditions:
-                          - condition: state
-                            state: "off"
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu2_active
-                          - condition: numeric_state
-                            entity_id: sensor.active_gpus
-                            below: sensor.possible_gpus
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id:
-                                - button.mining_rig_1_mining_rig_1_start_gpu2
-                          - delay:
-                              hours: 0
-                              minutes: 0
-                              seconds: 15
-                              milliseconds: 0
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu3_active
-                            state: "off"
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_start_gpu3
-                          - delay:
-                              hours: 0
-                              minutes: 0
-                              seconds: 15
-                              milliseconds: 0
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu4_active
-                            state: "off"
-                          - condition: numeric_state
-                            entity_id: sensor.active_gpus
-                            below: sensor.possible_gpus
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_start_gpu4
-                          - delay:
-                              hours: 0
-                              minutes: 0
-                              seconds: 15
-                              milliseconds: 0
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu5_active
-                            state: "off"
-                          - condition: numeric_state
-                            entity_id: sensor.active_gpus
-                            below: sensor.possible_gpus
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_start_gpu5
-                          - delay:
-                              hours: 0
-                              minutes: 0
-                              seconds: 15
-                              milliseconds: 0
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_start_gpu0
+                  - delay:
+                      hours: 0
+                      minutes: 0
+                      seconds: 15
+                      milliseconds: 0
               - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu1_active
+                    state: "off"
+                  - condition: numeric_state
+                    entity_id: sensor.active_gpus
+                    below: sensor.possible_gpus
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_start_gpu1
+                  - delay:
+                      hours: 0
+                      minutes: 0
+                      seconds: 15
+                      milliseconds: 0
+              - conditions:
+                  - condition: state
+                    state: "off"
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu2_active
+                  - condition: numeric_state
+                    entity_id: sensor.active_gpus
+                    below: sensor.possible_gpus
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id:
+                        - button.mining_rig_1_mining_rig_1_start_gpu2
+                  - delay:
+                      hours: 0
+                      minutes: 0
+                      seconds: 15
+                      milliseconds: 0
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu3_active
+                    state: "off"
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_start_gpu3
+                  - delay:
+                      hours: 0
+                      minutes: 0
+                      seconds: 15
+                      milliseconds: 0
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu4_active
+                    state: "off"
+                  - condition: numeric_state
+                    entity_id: sensor.active_gpus
+                    below: sensor.possible_gpus
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_start_gpu4
+                  - delay:
+                      hours: 0
+                      minutes: 0
+                      seconds: 15
+                      milliseconds: 0
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu5_active
+                    state: "off"
+                  - condition: numeric_state
+                    entity_id: sensor.active_gpus
+                    below: sensor.possible_gpus
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_start_gpu5
+                  - delay:
+                      hours: 0
+                      minutes: 0
+                      seconds: 15
+                      milliseconds: 0
+      - conditions:
+          - condition: numeric_state
+            entity_id: sensor.possible_gpus
+            below: sensor.active_gpus
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu5_active
+                    state: "on"
                   - condition: numeric_state
                     entity_id: sensor.possible_gpus
-                    below: sensor.active_gpus
+                    below: 6
                 sequence:
-                  - choose:
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu5_active
-                            state: "on"
-                          - condition: numeric_state
-                            entity_id: sensor.possible_gpus
-                            below: 6
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_stopgpu5
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu4_active
-                            state: "on"
-                          - condition: numeric_state
-                            entity_id: sensor.possible_gpus
-                            below: 5
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_stopgpu4
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu3_active
-                            state: "on"
-                          - condition: numeric_state
-                            entity_id: sensor.possible_gpus
-                            below: 4
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_stopgpu3
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu2_active
-                            state: "on"
-                          - condition: numeric_state
-                            entity_id: sensor.possible_gpus
-                            below: 3
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_stopgpu2
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu1_active
-                            state: "on"
-                          - condition: numeric_state
-                            entity_id: sensor.possible_gpus
-                            below: 2
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_stopgpu1
-                      - conditions:
-                          - condition: state
-                            entity_id: binary_sensor.mining_rig_1_gminer_gpu0_active
-                            state: "on"
-                          - condition: numeric_state
-                            entity_id: sensor.possible_gpus
-                            below: 1
-                        sequence:
-                          - action: button.press
-                            metadata: {}
-                            data: {}
-                            target:
-                              entity_id: button.mining_rig_1_mining_rig_1_stopgpu0
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_stopgpu5
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu4_active
+                    state: "on"
+                  - condition: numeric_state
+                    entity_id: sensor.possible_gpus
+                    below: 5
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_stopgpu4
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu3_active
+                    state: "on"
+                  - condition: numeric_state
+                    entity_id: sensor.possible_gpus
+                    below: 4
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_stopgpu3
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu2_active
+                    state: "on"
+                  - condition: numeric_state
+                    entity_id: sensor.possible_gpus
+                    below: 3
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_stopgpu2
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu1_active
+                    state: "on"
+                  - condition: numeric_state
+                    entity_id: sensor.possible_gpus
+                    below: 2
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_stopgpu1
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.mining_rig_1_gminer_gpu0_active
+                    state: "on"
+                  - condition: numeric_state
+                    entity_id: sensor.possible_gpus
+                    below: 1
+                sequence:
+                  - action: button.press
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: button.mining_rig_1_mining_rig_1_stopgpu0
 mode: single
