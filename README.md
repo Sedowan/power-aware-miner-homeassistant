@@ -235,8 +235,8 @@ This project allows:
 
 Feel free to fork and customize the logic, or open issues for improvements or questions.
 
-## Sources
+## Credits
 
-- Home Assistant
-- HASS.Agent
-- ChatGPT
+- [Home Assistant](https://www.home-assistant.io/)
+- [HASS.Agent](https://github.com/LAB02-Research/HASS.Agent)
+- [ChatGPT](https://ChatGPT.com)
