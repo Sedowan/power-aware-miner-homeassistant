@@ -33,7 +33,7 @@ C:\Mining\GMiner\
 
 ```bat
 cd "C:\Mining\GMiner\"
-title GPU0 Miner
+title GPU0_Miner
 miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices 0
 pause
 ```
