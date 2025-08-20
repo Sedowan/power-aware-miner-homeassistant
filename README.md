@@ -41,7 +41,7 @@ nvidia-smi -i GPU-<UUID> -pl 210
 nvidia-smi -i GPU-<UUID> -pl 210
 ```
 
-To add this task to boot of Windows use this Command-line one-liner (Run as Admin).
+To add this task to boot of Windows use this Command-line one-liner (Run as Admin):
 
 ```bat
 schtasks /create /tn "SetNvidiaPL" /tr "C:\Mining\set_power_limit.bat" /sc onstart /ru "SYSTEM" /rl HIGHEST
