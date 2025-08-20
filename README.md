@@ -56,11 +56,9 @@ nvidia-smi --query-gpu=name,power.limit --format=csv
 ### Batch File Sample (`mine_ravencoin_sample.bat`)
 
 ```bat
+title GMiner_GPU<ID>
 cd "C:\Mining\GMiner\"
-title GPU<ID> Miner
 miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices GPU<ID>
-title GPU0_Miner
-miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices 0
 pause
 ```
 
