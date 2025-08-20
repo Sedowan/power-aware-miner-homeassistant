@@ -57,8 +57,13 @@ nvidia-smi --query-gpu=name,power.limit --format=csv
 
 ```bat
 cd "C:\Mining\GMiner\"
+<<<<<<< HEAD
 title GPU<ID> Miner
 miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices GPU<ID>
+=======
+title GPU0_Miner
+miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices 0
+>>>>>>> f11bdd2bb77aaf9c37c1a08ffafa8198ca11bbcd
 pause
 ```
 
@@ -244,7 +249,7 @@ This shows the sensors configuration in HASS.Agent after the setup.
 
 ![HASS.AGENT_Commands](images/commands_en.jpg)
 
-This shows the sensors configuration in HASS.Agent after the setup.
+This shows the commands configuration in HASS.Agent after the setup.
 
 
 
