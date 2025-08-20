@@ -140,7 +140,7 @@ Each GPU has its own start/stop command in HASS.Agent.
 ```json
 {
   "Name": "Mining-Rig-1-Start-GPU0",
-  "Command": "C:\Mining\GMiner\mine_ravencoin_0.bat",
+  "Command": "C:\\Mining\\GMiner\\mine_ravencoin_0.bat",
   "RunAsLowIntegrity": true
 }
 ```
