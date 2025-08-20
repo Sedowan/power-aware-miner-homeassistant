@@ -355,7 +355,7 @@ Replace (`[YOUR_...]`) with the appropriate value of your system.
 
 ## Step 5: Automation – Dynamic GPU Start/Stop
 
-This automation starts or stops mining GPUs depending on the comparison of `moegliche_gpus` and `aktive_gpus`.
+This automation starts or stops mining GPUs depending on the comparison of `possible_gpus` and `active_gpus`.
 
 ```yaml
 alias: Miningmanagement
