@@ -27,19 +27,99 @@ C:\Mining\GMiner\
 ├── mine_ravencoin_1.bat
 ├── ...
 ├── mine_ravencoin_x.bat
+├── set_power_limit.bat
 ```
 
-### Batch File Example (`mine_ravencoin_0.bat`)
+### Setting GPU Power Limits (`set_power_limit.bat`)
+
+```bat
+@echo off
+title Set NVIDIA Power Limits
+:: GPU0
+nvidia-smi -i GPU-<UUID> -pl 210
+:: GPU1
+nvidia-smi -i GPU-<UUID> -pl 210
+```
+
+To add this task to boot of Windows use this Command-line one-liner (Run as Admin).
+
+```bat
+schtasks /create /tn "SetNvidiaPL" /tr "C:\Mining\set_power_limit.bat" /sc onstart /ru "SYSTEM" /rl HIGHEST
+```
+
+To check if the Power Limits are set you can use this commad prompt:
+
+```bat
+nvidia-smi --query-gpu=name,power.limit --format=csv
+```
+
+### Batch File Sample (`mine_ravencoin_sample.bat`)
 
 ```bat
 cd "C:\Mining\GMiner\"
-title GPU0 Miner
-miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices 0
+title GPU<ID> Miner
+miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices GPU<ID>
 pause
 ```
 
 - Each file uses a distinct `--devices` number and `title` for window tracking
 - All batch files remain in the same directory as the miner executable
+
+The GMiner only accepts the `GPU<ID>` in `--devices`. If you use multiple GPUs of different types or want to control a distinctive physical card you can use the `GPU-<UUID>` to retrieve the `GPU<ID>`. Add this before the miner start in the mining`.bat` file and change the `GPU<ID>` at the end:
+
+### Batch File Exampke (`mine_ravencoin_0.bat`)
+
+```bat
+@echo off
+setlocal ENABLEDELAYEDEXPANSION
+title GMiner_GPU0
+
+REM ====== Enter your UUID(s) here ======
+set "UUID_LIST=GPU-<UUID1>"
+REM Example for multiple:
+REM set "UUID_LIST=GPU-<UUID1>,GPU-<UUID2>"
+
+set "DEVICE_INDICES="
+
+REM ====== UUID -> INDEX mapping for 'nvidia-smi -L' ======
+for %%U in (%UUID_LIST%) do (
+  set "IDX_FOUND="
+  for /f "usebackq tokens=2 delims= " %%I in (`
+    nvidia-smi -L 2^>nul ^| find "%%~U"
+  `) do (
+    set "IDX_TMP=%%I"
+    set "IDX_FOUND=!IDX_TMP::=!"
+  )
+  if defined IDX_FOUND (
+    if defined DEVICE_INDICES (
+      set "DEVICE_INDICES=!DEVICE_INDICES!,!IDX_FOUND!"
+    ) else (
+      set "DEVICE_INDICES=!IDX_FOUND!"
+    )
+  ) else (
+    echo [ERROR] UUID %%~U could not be found
+    echo [DEBUG]output of 'nvidia-smi -L':
+    nvidia-smi -L
+    pause
+    exit /b 1
+  )
+)
+
+echo [INFO] UUID(s): %UUID_LIST%
+echo [INFO] GMiner-Indices: %DEVICE_INDICES%
+
+REM ====== Overview and check ======
+nvidia-smi -L
+nvidia-smi --query-gpu=index,uuid,name,pci.bus_id --format=csv 2>nul
+
+REM ====== Start GMiner ======
+cd /d C:\Mining\GMiner
+miner.exe --algo kawpow --server rvn.2miners.com:6060 --user [YOUR_WALLET_ADDRESS].[YOUR_WORKER_ID] --devices %DEVICE_INDICES%
+
+echo [INFO] Mining ended
+pause
+
+```
 
 ---
 
@@ -119,7 +199,39 @@ These sensors are auto-discovered in Home Assistant as `binary_sensor.mining_rig
 
 This shows the sensor configuration in HASS.Agent. It tracks if a Command Prompt window with the title `GMiner_GPU0` is open (not necessarily in focus).
 
+### Power Limit Tracking (from `sensors.json`)
 
+Each GPU has a `PowershellSensor` to detect current power limit of that GPU.
+
+#### Example: GPU0
+
+```json
+  {
+    "Type": "PowershellSensor",
+    "Id": "<UUID>",
+    "Name": "GPU_powerlimit_<graphic-card>",
+    "UpdateInterval": 60,
+    "Query": "(nvidia-smi --query-gpu=power.limit --format=csv,noheader,nounits -i GPU-<UUID>).Trim()",
+    "Scope": null,
+    "WindowName": "",
+    "Category": "",
+    "Counter": "",
+    "Instance": "",
+    "EntityName": "GPU_powerlimit_<graphic-card>",
+    "IgnoreAvailability": true,
+    "ApplyRounding": false,
+    "Round": null,
+    "AdvancedSettings": null
+  },
+```
+
+These sensors are auto-discovered in Home Assistant as `sensor.GPU_powerlimit_<graphic-card>`.
+
+#### Graphical Setup Example:
+
+![HASS.Agent_Sensor](images/sensor2_en.jpg)
+
+This shows the sensor configuration in HASS.Agent.
 
 
 ### Final HASS.Agent Setup:

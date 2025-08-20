@@ -151,5 +151,39 @@
     "ApplyRounding": false,
     "Round": null,
     "AdvancedSettings": null
+  },
+  {
+    "Type": "PowershellSensor",
+    "Id": "eb3debfc-6e00-4066-84ad-22fca2d83186",
+    "Name": "GPU_powerlimit_gtx1080ti_1",
+    "UpdateInterval": 60,
+    "Query": "(nvidia-smi --query-gpu=power.limit --format=csv,noheader,nounits -i GPU-b305a841-d935-3496-06b6-d8f3c039e2d4).Trim()",
+    "Scope": null,
+    "WindowName": "",
+    "Category": "",
+    "Counter": "",
+    "Instance": "",
+    "EntityName": "GPU_powerlimit_gtx1080ti_1",
+    "IgnoreAvailability": true,
+    "ApplyRounding": false,
+    "Round": null,
+    "AdvancedSettings": null
+  },
+  {
+    "Type": "PowershellSensor",
+    "Id": "d87720cc-abeb-4018-9c7f-b869104c5fe7",
+    "Name": "GPU_powerlimit_gtx1080ti_2",
+    "UpdateInterval": 60,
+    "Query": "(nvidia-smi --query-gpu=power.limit --format=csv,noheader,nounits -i GPU-c599418b-35b4-7193-8f38-10bc21d0a2ab).Trim()",
+    "Scope": null,
+    "WindowName": "",
+    "Category": "",
+    "Counter": "",
+    "Instance": "",
+    "EntityName": "GPU_powerlimit_gtx1080ti_2",
+    "IgnoreAvailability": true,
+    "ApplyRounding": false,
+    "Round": null,
+    "AdvancedSettings": null
   }
 ]
