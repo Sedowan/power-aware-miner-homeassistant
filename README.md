@@ -8,7 +8,7 @@ This project describes a fully automated mining rig that operates GPUs based on 
 
 > The system ensures that mining only occurs when conditions allow, such as sufficient battery charge, available photovoltaic (PV) power, and low competing load priority.
 
-> The Example is based on 6 available GPUs. However, the logic is repetitive.
+> The example is based on 6 available GPUs. However, the logic is repetitive.
 
 ---
 
@@ -30,7 +30,11 @@ C:\Mining\GMiner\
 ├── set_power_limit.bat
 ```
 
-### Setting GPU Power Limits (`set_power_limit.bat`)
+### Setting GPU Power Limits at Boot
+
+To ensure GPUs always run with the correct power limits, the file `set_power_limit.bat` is executed during system startup using Windows Task Scheduler. This batch script applies power limits via `nvidia-smi` and GPU UUIDs.
+
+#### Example: `set_power_limit.bat`
 
 ```bat
 @echo off
@@ -41,19 +45,25 @@ nvidia-smi -i GPU-<UUID> -pl 210
 nvidia-smi -i GPU-<UUID> -pl 210
 ```
 
-To add this task to boot of Windows use this Command-line one-liner (Run as Admin):
+#### Registering the Task at Boot
+
+Run this one-liner in an elevated Command Prompt:
 
 ```bat
 schtasks /create /tn "SetNvidiaPL" /tr "C:\Mining\set_power_limit.bat" /sc onstart /ru "SYSTEM" /rl HIGHEST
 ```
 
-To check if the Power Limits are set you can use this commad prompt:
+#### Verify Settings
 
 ```bat
 nvidia-smi --query-gpu=name,power.limit --format=csv
 ```
 
-### Batch File Sample (`mine_ravencoin_sample.bat`)
+### Batch Files for Mining
+
+Each GPU is controlled via its own `.bat` file. They define the miner executable, pool, wallet, and device index.
+
+#### Sample: `mine_ravencoin_sample.bat`
 
 ```bat
 title GMiner_GPU<ID>
@@ -62,12 +72,12 @@ miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_
 pause
 ```
 
-- Each file uses a distinct `--devices` number and `title` for window tracking
-- All batch files remain in the same directory as the miner executable
+- Each file uses a distinct `--devices` number and `title` for tracking
+- All batch files remain in the miner directory
 
-The GMiner only accepts the `GPU<ID>` in `--devices`. If you use multiple GPUs of different types or want to control a distinctive physical card you can use the `GPU-<UUID>` to retrieve the `GPU<ID>`. Add this before the miner start in the mining`.bat` file and change the `GPU<ID>` at the end:
+For advanced setups, the GPU `UUID` can be mapped to GMiner indices. This ensures deterministic GPU selection when multiple models are present.
 
-### Batch File Exampke (`mine_ravencoin_0.bat`)
+#### Example: `mine_ravencoin_0.bat`
 
 ```bat
 @echo off
@@ -118,7 +128,6 @@ miner.exe --algo kawpow --server rvn.2miners.com:6060 --user [YOUR_WALLET_ADDRES
 
 echo [INFO] Mining ended
 pause
-
 ```
 
 ---
@@ -129,7 +138,7 @@ pause
 
 - A **long-lived access token** is created in Home Assistant and entered into HASS.Agent
 - MQTT uses existing `mosquitto` broker credentials
-- **All commands and sensors run with "Run as low integrity" enabled**
+- Ensure all commands and sensors run with **"Run as low integrity"** enabled
 
 ### Commands Setup (from `commands.json`)
 
@@ -149,7 +158,7 @@ Each GPU has its own start/stop command in HASS.Agent.
 
 ```json
 {
-  "Name": "Mining-Rig-1-StopGPU0",
+  "Name": "Mining-Rig-1-Stop-GPU0",
   "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU0\" /t",
   "RunAsLowIntegrity": true
 }

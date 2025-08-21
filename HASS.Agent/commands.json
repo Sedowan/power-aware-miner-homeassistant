@@ -79,7 +79,7 @@
   {
     "Id": "b1ea3aa9-8751-4157-a239-8e726d178d91",
     "Name": "Mining-Rig-1-StopGPU0",
-    "EntityName": "Mining-Rig-1-StopGPU0",
+    "EntityName": "Mining-Rig-1-Stop-GPU0",
     "Type": "CustomCommand",
     "EntityType": "button",
     "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU0\" /t",
@@ -90,7 +90,7 @@
   {
     "Id": "c3531c69-37ec-4e47-8c87-3b13c2a98d5f",
     "Name": "Mining-Rig-1-StopGPU1",
-    "EntityName": "Mining-Rig-1-StopGPU1",
+    "EntityName": "Mining-Rig-1-Stop-GPU1",
     "Type": "CustomCommand",
     "EntityType": "button",
     "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU1\" /t",
@@ -101,7 +101,7 @@
   {
     "Id": "f3c1e6bb-c6b5-41a8-be7c-34185762184a",
     "Name": "Mining-Rig-1-StopGPU2",
-    "EntityName": "Mining-Rig-1-StopGPU2",
+    "EntityName": "Mining-Rig-1-Stop-GPU2",
     "Type": "CustomCommand",
     "EntityType": "button",
     "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU2\" /t",
@@ -112,7 +112,7 @@
   {
     "Id": "9de6c7fb-6894-4a14-9a33-f33d6b465b63",
     "Name": "Mining-Rig-1-StopGPU3",
-    "EntityName": "Mining-Rig-1-StopGPU3",
+    "EntityName": "Mining-Rig-1-Stop-GPU3",
     "Type": "CustomCommand",
     "EntityType": "button",
     "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU3\" /t",
@@ -123,7 +123,7 @@
   {
     "Id": "d2bbfafa-955d-4fac-ad99-72c7ca427e25",
     "Name": "Mining-Rig-1-StopGPU4",
-    "EntityName": "Mining-Rig-1-StopGPU4",
+    "EntityName": "Mining-Rig-1-Stop-GPU4",
     "Type": "CustomCommand",
     "EntityType": "button",
     "Command": "taskkill /f /fi \"WindowTitle eq  GMiner_GPU4\" /t",
@@ -134,7 +134,7 @@
   {
     "Id": "d0383a5f-adb0-41fe-8ecb-5a94958496bc",
     "Name": "Mining-Rig-1-StopGPU5",
-    "EntityName": "Mining-Rig-1-StopGPU5",
+    "EntityName": "Mining-Rig-1-Stop-GPU5",
     "Type": "CustomCommand",
     "EntityType": "button",
     "Command": "taskkill /f /fi \"WindowTitle eq GMiner_GPU5\" /t",
