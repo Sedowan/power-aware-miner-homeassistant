@@ -185,7 +185,7 @@ This shows the HASS.Agent stop command for GPU0, which uses a `taskkill` command
 
 ## Step 3: GPU Status Monitoring via HASS.Agent Sensors
 
-### Active Window Detection (from `sensors.json`)
+### Window Detection (from `sensors.json`)
 
 Each GPU has a `NamedWindowSensor` to detect whether the corresponding miner process is running.
 
