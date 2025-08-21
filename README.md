@@ -280,34 +280,68 @@ Replace (`[YOUR_...]`) with the appropriate value of your system.
 ```yaml
 - sensor:
     - name: "possible_gpus"
-      unique_id: bf167e5d-3257-46fe-9363-c5214fab5989
+      unique_id: 5b9b247f-490b-4638-937b-2de8eeea4b8a
       icon: mdi:expansion-card
-      state: >
-        {% set gpus = int(0) %}
-        {% set possible_g = states('sensor.possible_gpus') | int(0) %}
+      state: >-
+        {% set lower_soc = [YOUR_LOWEST_STATE_OF_CHARGE_TO_ALLOW_MINING] %}
+        {% set surp_th_g_l = [YOUR_SURPLUS_POWER_THRESHOLD_FOR_GRID] %}
+        {% set surp_th_g_b = [YOUR_SURPLUS_POWER_BUFFER] %}
+        {% set surp_th_p_l = [YOUR_LOWER_SURPLUS_POWER_THRESHOLD_FOR_PRIORITY] %}
+        {% set surp_th_p_u = [YOUR_UPPER_SURPLUS_POWER_THRESHOLD_FOR_PRIORITY] %}
+
         {% set grid_p = states('sensor.[YOUR_GRID_SENSOR]') | float(0) %}
+        {% set possible_g = states('sensor.possible_gpus') | int(0) %}
         {% set active_g = states('sensor.active_gpus') | int(-10) %}
-        {% set prio_p = states('sensor.[YOUR_PRIORITY_CONSUMER]') | float(0) %}
-        {% set prio_on = states('switch.[YOUR_PRIOTITY_CONSUMER_SWITCH_STATE]')  | bool(true) %}
-        {% set pv_p = states('sensor.[YOUR_SOLAR_POWER]') | float(0) %}
-        {% set soc_v = states('sensor.[YOUR_STATE_OF_CHARGE]') | float(0) %}
-        {% set max_gpus = int([YOUR_GPU_NUMBER]) %}
-        {% set est_p_gpu = [YOUR_ESTIMATED_POWER_DRAW_PERGPU] %}
-        {% set est_p_prio = [YOUR_ESTIMATED_POWER_DRAW_PRIO] %}
-        {% set lower_soc = [YOUR_LOWER_SOC_LIMIT] %}
-        {% set surp_th_g = [YOUR_SURPLUS_THRESHOLD_FOR_GRID] %}
-        {% set surp_th_p = [YOUR_SURPLUS_THRESHOLD_FOR_PRIORITY] %}
+        {% set prio_p = states('sensor.[YOUR_PRIORITY_CONSUMER_POWER]') | float(0) %}
+        {% set prio_on = states('switch.[YOUR_PRIOTITY_CONSUMER_SWITCH_STATE]') | bool(true) %}
+        {% set pv_p = states('sensor.[YOUR_CURRENT_SOLAR_POWER]') | float(0) %}
+        {% set soc_v = states('sensor.[YOUR_CURRENT_STATE_OF_CHARGE]') | float(0) %}
+        {% set mining_rig_online = states('binary_sensor.[YOUR_MINING_RIG_ONLINE_SENSOR]') %}
+    
+        {% set p_est_gpu_0 = states('sensor.[ESTIMATED_POWER_OF_GPUNAME]') | float(250) %}
+        {% set p_est_gpu_1 = states('sensor.[ESTIMATED_POWER_OF_GPUNAME]') | float(250) %}
+        {% set p_est_gpu_2 = states('sensor.[ESTIMATED_POWER_OF_GPUNAME]') | float(250) %}
+
+        {% set gpu_watts = [p_est_gpu_1, p_est_gpu_2] %}
+        {% set gpus = int(0) %}
+        {% set cnt = (gpu_watts | count) %}
+
         {% if active_g >= 0 %}
-          {% set grid_p_wo_gpu = float(grid_p + (float(active_g) * est_p_gpu)) %}
+          {% set avg_w = (gpu_watts | sum) / cnt if cnt > 0 else 0 %}
+          {% set grid_p_wo_gpu = grid_p + (active_g | float(0)) * avg_w %}
+        {% else %}
+          {% set grid_p_wo_gpu = grid_p %}
         {% endif %}
+        {% set cands = gpu_watts | sort %}
+        {% set ns = namespace(can=0, budget=grid_p_wo_gpu) %}
         {% if grid_p > 0 %}
           {% if pv_p > 0 %}
-            {% if prio_on == false and grid_p_wo_gpu > surp_th_g and grid_p_wo_gpu < 1850 and soc_v > lower_soc %}
-              {% set gpus = int(grid_p_wo_gpu / est_p_gpu ) | round(0) %}
-            {% elif prio_on == true and grid_p_wo_gpu > surp_th_g and soc_v > lower_soc %}
-              {% set gpus = int((grid_p_wo_gpu) / est_p_gpu ) | round(0) %}
-            {% elif prio_on == false and grid_p_wo_gpu > est_p_prio and soc_v > lower_soc %}
-              {% set gpus = int((grid_p_wo_gpu - prio_p - surp_th_p) / est_p_gpu ) | round(0) %}
+            {% if prio_on == false and grid_p_wo_gpu > surp_th_g_l and grid_p_wo_gpu < surp_th_p_l and soc_v > lower_soc %}
+              {% for w in cands %}
+                {% if ns.budget > w %}
+                  {% set ns.can = ns.can + 1 %}
+                  {% set ns.budget = ns.budget - w %}
+                {% endif %}
+              {% endfor %}
+              {% set gpus = ns.can %}
+            {% elif prio_on == true and grid_p_wo_gpu > surp_th_g_l and soc_v > lower_soc %}
+              {% set ns = namespace(can=0, budget=grid_p_wo_gpu) %}
+              {% for w in cands %}
+                {% if ns.budget > w %}
+                  {% set ns.can = ns.can + 1 %}
+                  {% set ns.budget = ns.budget - w %}
+                {% endif %}
+              {% endfor %}
+              {% set gpus = ns.can %}
+            {% elif prio_on == false and grid_p_wo_gpu > surp_th_p_u and soc_v > lower_soc %}
+              {% set ns = namespace(can=0, budget=grid_p_wo_gpu - prio_p - surp_th_g_b) %}
+              {% for w in cands %}
+                {% if ns.budget > w %}
+                  {% set ns.can = ns.can + 1 %}
+                  {% set ns.budget = ns.budget - w %}
+                {% endif %}
+              {% endfor %}
+              {% set gpus = ns.can %}
             {% else %}
               {% set gpus = 0 %}
             {% endif %}
@@ -315,11 +349,14 @@ Replace (`[YOUR_...]`) with the appropriate value of your system.
             {% set gpus = 0 %}
           {% endif %}
         {% else %}
-            {% set gpus = 0 %}
+          {% set gpus = 0 %}
         {% endif %}
-        {% if gpus > max_gpus %}
-          {% set gpus = max_gpus %}
-        {% endif%}
+        {% if gpus > cnt %}
+          {% set gpus = cnt %}
+        {% endif %}
+        {% if mining_rig_online == 'off' %}
+          {% set gpus = 0 %}
+        {% endif %}
         {{ gpus }}
 ```
 
@@ -328,7 +365,7 @@ Replace (`[YOUR_...]`) with the appropriate value of your system.
 ```yaml
 - sensor:
     - name: "active_gpus"
-      unique_id: cfadd[YOUR_LOWER_SOC_LIMIT]6-b245-4e1c-a0af-7a890e83dcdd
+      unique_id: cfadd956-b245-4e1c-a0af-7a890e83dcdd
       icon: mdi:expansion-card-variant
       state: >
         {% set gpu0 = int(1) %}
@@ -338,6 +375,7 @@ Replace (`[YOUR_...]`) with the appropriate value of your system.
         {% set gpu4 = int(1) %}
         {% set gpu5 = int(1) %}
         {% set gpus = int(6) %}
+        {% set mining_rig_online = states('binary_sensor.[YOUR_MINING_RIG_ONLINE_SENSOR]') %}
         {% if states('binary_sensor.mining_rig_1_gminer_gpu0_active') == "off" %}
           {% set gpu0 = int(0) %}
         {% endif %}
@@ -357,7 +395,29 @@ Replace (`[YOUR_...]`) with the appropriate value of your system.
           {% set gpu5 = int(0) %}
         {% endif %}
         {% set gpus = int(gpu0 + gpu1 + gpu2 + gpu3 + gpu4 + gpu5) %}
+        {% if mining_rig_online == 'off' %}
+          {% set gpus = 0 %}
+        {% endif%}
         {{ gpus }}
+```
+
+### Sensor: `Mining Rig online`
+
+```yaml
+- binary_sensor:
+    - name: "[YOUR_MINING_RIG_ONLINE_SENSOR]"
+      unique_id: 2e916f8b-16cc-4d58-becd-a767ae00b8c3
+      state: >-
+        {% set ent = 'sensor.[YOUR_MINING_RIG_CPU_LOAD_SENSOR]' %}
+        {% if states[ent] is defined %}
+          {% set s = states(ent) %}
+          {% set age = ( now() - states[ent].last_updated ).total_seconds() %}
+          {{ s not in ['unknown','unavailable', None] and age < 20 }}
+        {% else %}
+          false
+        {% endif %}
+      availability: >
+        {{ true }}
 ```
 
 ---
