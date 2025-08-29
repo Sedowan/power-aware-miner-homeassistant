@@ -312,7 +312,7 @@ Replace (`[YOUR_...]`) with the appropriate value of your system.
         {% else %}
           {% set grid_p_wo_gpu = grid_p %}
         {% endif %}
-        {% set cands = gpu_watts | sort %}
+        {% set cands = gpu_watts %}
         {% set ns = namespace(can=0, budget=grid_p_wo_gpu) %}
         {% if grid_p > 0 %}
           {% if pv_p > 0 %}
