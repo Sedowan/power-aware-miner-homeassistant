@@ -302,7 +302,7 @@ Replace (`[YOUR_...]`) with the appropriate value of your system.
         {% set p_est_gpu_1 = states('sensor.[ESTIMATED_POWER_OF_GPUNAME]') | float(250) %}
         {% set p_est_gpu_2 = states('sensor.[ESTIMATED_POWER_OF_GPUNAME]') | float(250) %}
 
-        {% set gpu_watts = [p_est_gpu_1, p_est_gpu_2] %}
+        {% set gpu_watts = [p_est_gpu_0, p_est_gpu_1, p_est_gpu_2] %}
         {% set gpus = int(0) %}
         {% set cnt = (gpu_watts | count) %}
 
