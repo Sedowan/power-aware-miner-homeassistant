@@ -22,6 +22,7 @@ All files are placed inside:
 
 ```
 C:\Mining\GMiner\
+├── gminer_hasrate.ps1
 ├── miner.exe
 ├── mine_ravencoin_0.bat
 ├── mine_ravencoin_1.bat
@@ -460,7 +461,7 @@ alias: Miningmanagement
   }
 ```
 
-This sensor gets the local IP of the Mining Rig.
+This sensor returns the local IP of the Mining Rig.
 
 #### Hashrate of each GPU
 
@@ -470,11 +471,11 @@ To obtain the current hashrate of each GPU the API option of the GMiner needs to
 miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices GPU<ID> --api [YOUR_PORT]
 ```
 
-The inforamtion can be parsed via json either via the HASS.Agent or a RESTful sensor in HomeAssistant.
+The inforamtion can be parsed via json either by the HASS.Agent or a RESTful sensor in HomeAssistant.
 
 ##### Hashrate via HASS.Agnet
 
-A Powershell script reads the current hashrate and returns the value.
+A Powershell script (`gminer_hasrate.ps1`) reads the current hashrate and returns the value.
 
 ```powershell
 param(
@@ -658,13 +659,13 @@ The script uses the WebSocket which is natively supported bei Powershell Version
     "Id": "10b03bb5-c4ff-4410-9b35-838b57abc91f",
     "Name": "gpu0_gminer_hashrate",
     "UpdateInterval": 10,
-    "Query": "& 'C:\\Program Files\\PowerShell\\7\\pwsh.exe' -NoLogo -NoProfile -ExecutionPolicy Bypass -File 'C:\\Mining\\scripts\\gminer_hashrate.ps1' -lport 10050 -WsPath '/ws'",
+    "Query": "& 'C:\\Program Files\\PowerShell\\7\\pwsh.exe' -NoLogo -NoProfile -ExecutionPolicy Bypass -File 'C:\\Mining\\scripts\\gminer_hashrate.ps1' -lport [YOUR_PORT] -WsPath '/ws'",
     "Scope": null,
     "WindowName": "",
     "Category": "",
     "Counter": "",
     "Instance": "",
-    "EntityName": "gpu0_gminer_hashrate",
+    "EntityName": "gpu[NUMBER]_gminer_hashrate",
     "IgnoreAvailability": false,
     "ApplyRounding": false,
     "Round": null,
@@ -672,7 +673,7 @@ The script uses the WebSocket which is natively supported bei Powershell Version
   }
 ```
 
-This Powershell sensor returns the current hasrate from each GPU. Note: The Port  (`lport [YOUR_PORT]`) reflects the GPU.
+This Powershell sensor returns the current hasrate from each GPU. Note: The Port  (`lport [YOUR_PORT]`) reflects the GPU (`gpu[NUMBER]`).
 
 ##### Hashrate via Home Assistant
 
