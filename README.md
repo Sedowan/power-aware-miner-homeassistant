@@ -436,6 +436,328 @@ alias: Miningmanagement
 
 ---
 
+## Step 6: Additional Sensors and Monitoring Tools
+
+#### Local Rig IP address
+
+```json
+  {
+    "Type": "PowershellSensor",
+    "Id": "7b7d35a4-d3c3-4f02-92d5-2c3c995628a0",
+    "Name": "local_IP",
+    "UpdateInterval": 60,
+    "Query": "(Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex ((Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' | Sort-Object RouteMetric, InterfaceMetric | Select-Object -First 1).InterfaceIndex) | Where-Object { $_.IPAddress -notlike '169.*' -and $_.IPAddress -notlike '127.*' } | Select-Object -First 1 -ExpandProperty IPAddress)",
+    "Scope": null,
+    "WindowName": "",
+    "Category": "",
+    "Counter": "",
+    "Instance": "",
+    "EntityName": "local_IP",
+    "IgnoreAvailability": false,
+    "ApplyRounding": false,
+    "Round": null,
+    "AdvancedSettings": null
+  }
+```
+
+This sensor gets the local IP of the Mining Rig.
+
+#### Hashrate of each GPU
+
+To obtain the current hashrate of each GPU the API option of the GMiner needs to be enabled (`--api`) and the port specified. If you use cascading GPU activation you will need to specify an individual port for each GPU.
+
+```bat
+miner.exe --algo kawpow --server [YOUR_POOL_ADDRESS] --user [YOUR_WALLET].[YOUR_WORKER_ID] --devices GPU<ID> --api [YOUR_PORT]
+```
+
+The inforamtion can be parsed via json either via the HASS.Agent or a RESTful sensor in HomeAssistant.
+
+##### Hashrate via HASS.Agnet
+
+A Powershell script reads the current hashrate and returns the value.
+
+```powershell
+param(
+  [string]$lhost   = '127.0.0.1',
+  [int]$lport      = 10050,
+  [string]$WsPath = $null   # optional: z.B. '/ws' wenn bekannt
+)
+
+# ---- Hilfsfunktion: Zahl aus JSON "mhs" finden ----
+function Find-MhsValue($obj) {
+  if ($null -eq $obj) { return $null }
+  if ($obj -is [double] -or $obj -is [float] -or $obj -is [int]) { return $obj }
+  if ($obj -is [string]) {
+    if ($obj -match '^[0-9]+([\.,][0-9]+)?$') { return [double]($obj -replace ',', '.') }
+    return $null
+  }
+  if ($obj.PSObject) {
+    foreach($p in $obj.PSObject.Properties){
+      $n = $p.Name.ToLower()
+      if($n -match 'mhs$|mh_s$|mhps$|mh'){
+        $v = Find-MhsValue $p.Value
+        if($null -ne $v){ return $v }
+      }
+    }
+    foreach($p in $obj.PSObject.Properties){
+      $v = Find-MhsValue $p.Value
+      if($null -ne $v){ return $v }
+    }
+  }
+  if ($obj -is [System.Collections.IEnumerable]) {
+    foreach($i in $obj){ $v = Find-MhsValue $i; if($null -ne $v){ return $v } }
+  }
+  return $null
+}
+
+$base = "http://$lhost`:$lport"
+$mh = 0.0
+
+# ---- 1) Versuche /api (JSON) ----
+try {
+  $r = Invoke-WebRequest -Uri "$base/api" -UseBasicParsing -TimeoutSec 4
+  if ($r.StatusCode -eq 200 -and $r.Content) {
+    try {
+      $j = $r.Content | ConvertFrom-Json -ErrorAction Stop
+      $cand = @($j.total_speed.mhs,$j.total_hashrate.mhs,$j.speed.mhs,$j.hashrate.mhs) |
+              Where-Object { $_ -ne $null } | Select-Object -First 1
+      if ($cand -ne $null) { $mh = [double]$cand }
+      if ($mh -eq 0) {
+        $any = Find-MhsValue $j
+        if($any -ne $null){ $mh = [double]$any }
+      }
+    } catch {}
+  }
+} catch {}
+
+# ---- 2) /stat (Text) ----
+if ($mh -eq 0) {
+  try {
+    $t = Invoke-WebRequest -Uri "$base/stat" -UseBasicParsing -TimeoutSec 4
+    if ($t.StatusCode -eq 200 -and $t.Content -match '(?i)(?:total[_\s]*speed|mhs)\D*([0-9\.,]+)') {
+      $mh = [double](($matches[1] -replace ',', '.'))
+    }
+  } catch {}
+}
+
+# ---- 3) HTML (Total oder GPU0) ----
+if ($mh -eq 0) {
+  try {
+    $h = Invoke-WebRequest -Uri "$base/" -UseBasicParsing -TimeoutSec 4
+    if ($h.StatusCode -eq 200 -and $h.Content) {
+      $c = $h.Content
+      if ($c -match '(?i)Total\s*Speed[^\r\n]*?([0-9\.,]+)\s*M\s*H/?s') {
+        $mh = [double](($matches[1] -replace ',', '.'))
+      } elseif ($c -match '(?i)GPU\s*0[^\r\n]*?([0-9\.,]+)\s*M\s*H/?s') {
+        $mh = [double](($matches[1] -replace ',', '.'))
+      }
+    }
+  } catch {}
+}
+
+# ---- 4) WebSocket (PowerShell 7) ----
+if ($mh -eq 0) {
+  # a) WS-URL bestimmen
+  $wsUrl = $null
+  if ($WsPath) {
+    $wsUrl = ($WsPath.StartsWith('ws') ? $WsPath : "ws://$lhost`:$lport$WsPath")
+  } else {
+    # aus script.js lesen
+    try {
+      $js = Invoke-WebRequest -Uri "$base/script.js" -UseBasicParsing -TimeoutSec 4
+      $code = $js.Content
+      $reNewWS = @'
+(?i)new\s+WebSocket\s*\(\s*(['"])([^'"]+)\1
+'@
+      $m = [regex]::Matches($code, $reNewWS)
+      if ($m.Count -gt 0) {
+        $arg = $m[0].Groups[2].Value
+        if     ($arg.StartsWith('ws')) { $wsUrl = $arg }
+        elseif ($arg.StartsWith('/'))  { $wsUrl = "ws://$lhost`:$lport$arg" }
+      }
+      if (-not $wsUrl) {
+        $reAbs = @'
+(?i)wss?://[^\s'"()]+
+'@
+        $m2 = [regex]::Matches($code, $reAbs)
+        if ($m2.Count -gt 0) { $wsUrl = $m2[0].Value }
+      }
+      if (-not $wsUrl) {
+        $reConcat = @'
+(?i)wss?://\s*\+\s*location\.host\s*\+\s*(['"])(/[^'"]+)\1
+'@
+        $m3 = [regex]::Matches($code, $reConcat)
+        if ($m3.Count -gt 0) { $wsUrl = "ws://$lhost`:$lport" + $m3[0].Groups[2].Value }
+      }
+    } catch {}
+    if (-not $wsUrl) {
+      foreach($p in '/ws','/socket','/api/ws','/stats','/telemetry','/miner'){
+        $wsUrl = "ws://$lhost`:$lport$p"; break
+      }
+    }
+  }
+
+  try {
+    Add-Type -AssemblyName System.Net.WebSockets
+    $cs  = [System.Net.WebSockets.ClientWebSocket]::new()
+    $cts = [System.Threading.CancellationTokenSource]::new()
+    $cts.CancelAfter(4000)
+    $cs.ConnectAsync([Uri]$wsUrl, $cts.Token).Wait()
+
+    $rcs = [System.Threading.CancellationTokenSource]::new()
+    $rcs.CancelAfter(4000)
+    $buf = New-Object byte[] 65536
+    $seg = [System.ArraySegment[byte]]::new($buf,0,$buf.Length)
+    $sb  = [System.Text.StringBuilder]::new()
+
+    do {
+      $res = $cs.ReceiveAsync($seg, $rcs.Token).Result
+      if ($res.Count -gt 0) {
+        $chunk = [System.Text.Encoding]::UTF8.GetString($buf,0,$res.Count)
+        [void]$sb.Append($chunk)
+      }
+    } while (-not $res.EndOfMessage)
+
+    $text = $sb.ToString()
+
+    # JSON probieren
+    try {
+      $trim = $text.TrimStart()
+      if ($trim.StartsWith('{') -or $trim.StartsWith('[')) {
+        $j = $text | ConvertFrom-Json -ErrorAction Stop
+        $cand = @($j.total_speed.mhs,$j.total_hashrate.mhs,$j.speed.mhs,$j.hashrate.mhs) |
+                Where-Object { $_ -ne $null } | Select-Object -First 1
+        if ($cand -ne $null) { $mh = [double]$cand }
+        if ($mh -eq 0) {
+          $any = Find-MhsValue $j
+          if($any -ne $null){ $mh = [double]$any }
+        }
+      }
+    } catch {}
+
+    # „MH/s“ im Text
+    if ($mh -eq 0) {
+      $mhs = [regex]::Matches($text, '(?i)([0-9\.,]+)\s*M\s*H/?s')
+      if ($mhs.Count -gt 0) { $mh = [double](($mhs[$mhs.Count-1].Groups[1].Value -replace ',', '.')) }
+    }
+  } catch {}
+}
+
+# ---- Ausgabe ----
+if ($mh -lt 0) { $mh = 0 }
+[System.Globalization.CultureInfo]::CurrentCulture = 'en-US'
+'{0:N2}' -f $mh
+
+```
+
+The script uses the WebSocket which is natively supported bei Powershell Version +7.x. Installation may be required. During installation, add pwsh to PATH.
+
+```json
+  {
+    "Type": "PowershellSensor",
+    "Id": "10b03bb5-c4ff-4410-9b35-838b57abc91f",
+    "Name": "gpu0_gminer_hashrate",
+    "UpdateInterval": 10,
+    "Query": "& 'C:\\Program Files\\PowerShell\\7\\pwsh.exe' -NoLogo -NoProfile -ExecutionPolicy Bypass -File 'C:\\Mining\\scripts\\gminer_hashrate.ps1' -lport 10050 -WsPath '/ws'",
+    "Scope": null,
+    "WindowName": "",
+    "Category": "",
+    "Counter": "",
+    "Instance": "",
+    "EntityName": "gpu0_gminer_hashrate",
+    "IgnoreAvailability": false,
+    "ApplyRounding": false,
+    "Round": null,
+    "AdvancedSettings": null
+  }
+```
+
+This Powershell sensor returns the current hasrate fromeach GPU. Note: The Port  (`lport [YOUR_PORT]`) reflects the GPU.
+
+##### Hashrate via Home Assistant
+
+In Homeassistant the hashrate can be obtained via a rest-sensor. Note: it will become "unavailable" when the GMiner is not running.
+
+```yaml
+rest:
+  - resource_template: "http://[YOUR_MINING_RIG_IP]:[YOUR_PORT]/stat"
+    scan_interval: 30
+    timeout: 10
+    headers:
+      Accept: application/json
+    sensor:
+      - name: gpu[NUMBER]_gminer_hashrate
+        unique_id: fcdd3de5-5f13-47fa-a6b7-593aae5488e1
+        unit_of_measurement: "MH/s"
+        state_class: measurement
+        value_template: >-
+          {% if value_json is defined and value_json.devices is defined and value_json.devices[0].speed is defined %}
+            {% set speed = value_json.devices[0].speed | float(0) %}
+            {% set unit  = (value_json.speed_unit | default('H/s')) %}
+            {% if unit == 'H/s'   %} {{ (speed / 1e6) | round(2) }}
+            {% elif unit == 'kH/s'%} {{ (speed / 1e3) | round(2) }}
+            {% elif unit == 'MH/s'%} {{ (speed)       | round(2) }}
+            {% elif unit == 'GH/s'%} {{ (speed * 1e3) | round(2) }}
+            {% else %}
+            {{ (speed / 1e6) | round(2) }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+```
+
+Similary to the HASS.Agent sensor this RESTful sensor reads the API enabled port of the GMiner (`--api [YOUR_PORT]`).
+
+#### GPU Temperature readout (NVIDIA)
+
+```json
+  {
+    "Type": "PowershellSensor",
+    "Id": "d01e9613-8786-43f4-9e43-aed682bc5b00",
+    "Name": "GPU_temperature_[YOUR_GPU]",
+    "UpdateInterval": 10,
+    "Query": "( & \"C:\\Windows\\System32\\nvidia-smi.exe\" -i GPU-<UUID> --query-gpu=temperature.gpu --format=csv,noheader,nounits ).Trim()",
+    "Scope": null,
+    "WindowName": "",
+    "Category": "",
+    "Counter": "",
+    "Instance": "",
+    "EntityName": "GPU_temperature_[YOUR_GPU]",
+    "IgnoreAvailability": false,
+    "ApplyRounding": false,
+    "Round": null,
+    "AdvancedSettings": null
+  }
+```
+
+This sensor reads the current GPU tempaerature. Note that the query is made to the specific `GPU-<UUID>`.
+
+#### GPU Load readout (NVIDIA)
+
+```json
+  {
+    "Type": "PowershellSensor",
+    "Id": "94131152-cfd3-42c5-93d9-72def78330b8",
+    "Name": "GPU_load_[YOUR_GPU]",
+    "UpdateInterval": 10,
+    "Query": "( & \"C:\\Windows\\System32\\nvidia-smi.exe\" -i GPU-<UUID> --query-gpu=utilization.gpu --format=csv,noheader,nounits ).Trim()",
+    "Scope": null,
+    "WindowName": "",
+    "Category": "",
+    "Counter": "",
+    "Instance": "",
+    "EntityName": "GPU_load_[YOUR_GPU]",
+    "IgnoreAvailability": false,
+    "ApplyRounding": false,
+    "Round": null,
+    "AdvancedSettings": null
+  }
+```
+
+This sensor reads the current GPU load. Note that the query is made to the specific `GPU-<UUID>`.
+
+---
+
 ## Summary
 
 This project allows:

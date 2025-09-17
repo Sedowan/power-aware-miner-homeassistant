@@ -42,7 +42,7 @@ nvidia-smi --query-gpu=index,uuid,name,pci.bus_id --format=csv 2>nul
 
 REM ====== Start GMiner ======
 cd /d C:\Mining\GMiner
-miner.exe --algo kawpow --server rvn.2miners.com:6060 --user [YOUR_WALLET_ADDRESS].[YOUR_WORKER_ID] --devices %DEVICE_INDICES%
+miner.exe --algo kawpow --server rvn.2miners.com:6060 --user [YOUR_WALLET_ADDRESS].[YOUR_WORKER_ID] --devices %DEVICE_INDICES% --api 10050
 
 echo [INFO] Mining ended
 pause
