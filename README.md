@@ -513,7 +513,7 @@ function Find-MhsValue($obj) {
 $base = "http://$lhost`:$lport"
 $mh = 0.0
 
-# ---- 1) Versuche /api (JSON) ----
+# ---- 1) Try /api (JSON) ----
 try {
   $r = Invoke-WebRequest -Uri "$base/api" -UseBasicParsing -TimeoutSec 4
   if ($r.StatusCode -eq 200 -and $r.Content) {
@@ -540,7 +540,7 @@ if ($mh -eq 0) {
   } catch {}
 }
 
-# ---- 3) HTML (Total oder GPU0) ----
+# ---- 3) HTML (Total or GPU0) ----
 if ($mh -eq 0) {
   try {
     $h = Invoke-WebRequest -Uri "$base/" -UseBasicParsing -TimeoutSec 4
@@ -557,12 +557,12 @@ if ($mh -eq 0) {
 
 # ---- 4) WebSocket (PowerShell 7) ----
 if ($mh -eq 0) {
-  # a) WS-URL bestimmen
+  # a) define WS-URL
   $wsUrl = $null
   if ($WsPath) {
     $wsUrl = ($WsPath.StartsWith('ws') ? $WsPath : "ws://$lhost`:$lport$WsPath")
   } else {
-    # aus script.js lesen
+    # read from script.js
     try {
       $js = Invoke-WebRequest -Uri "$base/script.js" -UseBasicParsing -TimeoutSec 4
       $code = $js.Content
@@ -620,7 +620,7 @@ if ($mh -eq 0) {
 
     $text = $sb.ToString()
 
-    # JSON probieren
+    # try JSON
     try {
       $trim = $text.TrimStart()
       if ($trim.StartsWith('{') -or $trim.StartsWith('[')) {
@@ -635,7 +635,7 @@ if ($mh -eq 0) {
       }
     } catch {}
 
-    # „MH/s“ im Text
+    # „MH/s“ in Text
     if ($mh -eq 0) {
       $mhs = [regex]::Matches($text, '(?i)([0-9\.,]+)\s*M\s*H/?s')
       if ($mhs.Count -gt 0) { $mh = [double](($mhs[$mhs.Count-1].Groups[1].Value -replace ',', '.')) }
@@ -643,7 +643,7 @@ if ($mh -eq 0) {
   } catch {}
 }
 
-# ---- Ausgabe ----
+# ---- Output ----
 if ($mh -lt 0) { $mh = 0 }
 [System.Globalization.CultureInfo]::CurrentCulture = 'en-US'
 '{0:N2}' -f $mh
@@ -672,7 +672,7 @@ The script uses the WebSocket which is natively supported bei Powershell Version
   }
 ```
 
-This Powershell sensor returns the current hasrate fromeach GPU. Note: The Port  (`lport [YOUR_PORT]`) reflects the GPU.
+This Powershell sensor returns the current hasrate from each GPU. Note: The Port  (`lport [YOUR_PORT]`) reflects the GPU.
 
 ##### Hashrate via Home Assistant
 
