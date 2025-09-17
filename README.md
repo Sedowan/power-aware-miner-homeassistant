@@ -767,6 +767,7 @@ This project allows:
 - Tight integration with real-time PV and battery metrics
 - Granular GPU control and feedback
 - Fully modular and reproducible setup
+- Additional monitoring features
 
 This project is "as is" and will not be maintained.
 
